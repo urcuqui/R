@@ -54,4 +54,4 @@ mCluster <- mCluster + geom_point(color = "red", position = position_jitter())
 mCluster <- mCluster + geom_density2d(aes(alpha=..level.., fill=..level..),size = 1.5, bins=6) 
 mCluster
 
-install.packages(markdown)
+
