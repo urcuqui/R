@@ -37,6 +37,8 @@ head(kData$cluster, 200)
 mSet$cluster <- kData$cluster
 mSet$year <- movies$year
 
+#Falta quitar los valores atipicos
+
 kPlot <- ggplot(mSet,aes(rtAllCriticsRating,rtAudienceRating, color = factor(cluster)) )
 kPlot <- kPlot + geom_point(position = position_jitter())
 kPlot
@@ -47,3 +49,9 @@ kPlot_two <- kPlot + geom_point(position = position_jitter())
 kPlot_two <- kPlot + facet_grid(. ~ cluster)
 kPlot_two
 
+mCluster <- ggplot(mSet[mSet$cluster == 1, ],aes(rtAllCriticsRating,rtAudienceRating)) 
+mCluster <- mCluster + geom_point(color = "red", position = position_jitter())
+mCluster <- mCluster + geom_density2d(aes(alpha=..level.., fill=..level..),size = 1.5, bins=6) 
+mCluster
+
+install.packages(markdown)
