@@ -264,12 +264,9 @@ trControlCv <- trainControl(method="cv", number=5)
 modeloRf <- train(LEAVE~., data = churn, method = "rf", 
                      trControl = trControlCv)
 
-#Esto se demora .....
-#...... en mi mAquina se demora 6:20
 
 modeloRf
 
 predicciones <- predict(modeloRf, newdata=testing) #type "raw" por defecto
 confusionMatrix(predicciones, testing$LEAVE)
 
-# Maravilloso
