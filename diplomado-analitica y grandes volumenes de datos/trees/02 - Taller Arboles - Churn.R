@@ -1,13 +1,7 @@
 ###########################################################################
-# Taller de Arboles de decisión: 
-#    ClasificaciOn del dataset Churn, del libro "Data Science for Business",
-#    de Foster Provost & Tom Fawcett, O'Reilly, 2013
-# Autor: Javier Diaz, PhD
-# Universidad ICESI
-###########################################################################
 
 ####################################################
-# 1. AnAlisis exploratorio (bAsico)
+# 1. Analisis exploratorio (bAsico)
 
 #install.packages("caret")
 #install.packages("ggplot2")
@@ -41,7 +35,7 @@ ggplot(churn, aes(x=LEFTOVER, y=OVERAGE, color=LEAVE)) + geom_point(size=2, alph
 set.seed(1234)
 inTrain <- createDataPartition(
   y = churn$LEAVE, # Estratificar la particion segun la clase a aprender
-  p = .75,         # Porcentaje de los datos que se quedarán en el training set
+  p = .75,         # Porcentaje de los datos que se quedarÃ¡n en el training set
   list = FALSE)    # Que los resultados esten en una matriz y no en una lista
 
 str(inTrain)
@@ -51,7 +45,7 @@ dim(training) #15000 instancias de aprendizaje
 dim(testing)  #5000 instancias de testing
 
 ####################################################
-# 3. Aprender árbol sin post poda
+# 3. Aprender Ã¡rbol sin post poda
 
 # Vamos a utilizar el modelo de aprendizaje supervisado "rpart", que es una implementaciOn
 # del algoritmo de Arboles de decisiOn CART.
@@ -62,7 +56,7 @@ dim(testing)  #5000 instancias de testing
 # a partir de la post poda de ramas. Un valor de 0 implica que no se tiene en cuenta la complejidad
 # del Arbol, y que no se poda.
 # Vamos explIcitamente a especificar los parAmetros que desactivan la post poda, especificando una
-# pre poda solamente basada en una profundidad mAxima de 3 para poder visualizar fácilmente
+# pre poda solamente basada en una profundidad mAxima de 3 para poder visualizar fÃ¡cilmente
 # el modelo aprendido
 
 set.seed(54321) # el valor de la semilla, en sI, no es importante, sOlo que se utilice siempre el mismo
@@ -108,7 +102,7 @@ confusionMatrix(predicciones, testing$LEAVE, mode = "prec_recall")
 confusionMatrix(predicciones, testing$LEAVE, mode = "everything")
 
 #############################################################
-# Overfitting: Como seria el árbol si desactivamos todas la post poda y dejamos una
+# Overfitting: Como seria el Ã¡rbol si desactivamos todas la post poda y dejamos una
 # pre poda muy permisiva (parAmetros por defecto de pre poda)
 
 grid <- data.frame(cp=c(0)) #Fijamos en 0 el parAmetro de complejidad para eliminar la post poda
@@ -156,8 +150,8 @@ confusionMatrix(predicciones, testing$LEAVE)
 
 # Por defecto el mEtodo train utiliza mEtodos de resampleo para determinar el 
 # valor Optimo del parAmetro de complejidad
-# Como la BD esta bien balanceada, no nos aporta nada utilizar  Kappa como métrica de 
-# clasificación, por lo que utilizaremos accuracy
+# Como la BD esta bien balanceada, no nos aporta nada utilizar  Kappa como mÃ©trica de 
+# clasificaciÃ³n, por lo que utilizaremos accuracy
 set.seed(54321) # el valor de la semilla, en sI, no es importante, sOlo que se utilice siempre el mismo
 modelo <- train(LEAVE~., data = training, method = "rpart")
 modelo
@@ -173,7 +167,7 @@ confusionMatrix(predicciones, testing$LEAVE)
 # 6. Tuning de la bUsqueda de los parAmetros del algoritmo
 #    De pronto los 3 intentos por defecto con valores distintos de cp son muy pocos
 
-# Entrenar un modelo de árbol de decisión con 10 configuraciones de cp diferentes
+# Entrenar un modelo de Ã¡rbol de decisiÃ³n con 10 configuraciones de cp diferentes
 set.seed(54321) # el valor de la semilla, en sI, no es importante, sOlo que se utilice siempre el mismo
 modelo <- train(LEAVE~., data = training, method = "rpart", tuneLength=10)
 modelo
@@ -188,7 +182,7 @@ confusionMatrix(predicciones, testing$LEAVE)
 
 # Vamos a blindarnos con respecto a la escogencia del cp, utilizando 
 # un protocolo de cross validation con 5 folds, repetido 5 veces.
-# También, como ya tenemos una idea más clara mAs o menos clara de cuAles son los valores de cp
+# TambiÃ©n, como ya tenemos una idea mÃ¡s clara mAs o menos clara de cuAles son los valores de cp
 # Optimos (cercanos a 0), vamos a definir especificamente los valores que queremos que se evaluen.
 # Esto tambiEn nos permite estar mas seguros de la estimaciOn de la mEtrica
 # de evaluaciOn utilizada (accuracy)
@@ -200,7 +194,7 @@ modeloRepCv <- train(LEAVE~., data = churn, method = "rpart",
                         trControl=trControlRepCv)
 modeloRepCv
 plot(modeloRepCv)
-# Esta estimaciOn del kappa y accuracy es mAs confiable, así como la obtención del parAmetro cp
+# Esta estimaciOn del kappa y accuracy es mAs confiable, asÃ­ como la obtenciÃ³n del parAmetro cp
 
 # Se realizan predicciones con el mEtodo predict
 predicciones <- predict(modeloRepCv, newdata=testing) #type "raw" por defecto
