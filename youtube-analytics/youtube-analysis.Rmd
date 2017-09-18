@@ -1,0 +1,50 @@
+---
+title: "youtube-analytics"
+author: "Christian Urcuqui"
+date: "18 de septiembre de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analytics in youtube data
+
+The next line codes explore some insights in the youtube data through the application of statistic and machine learning techniques 
+
+```{r cars}
+data <- read.csv(file.choose())
+data_without_id <- data[,-c(1, 4)]
+summary(data_without_id)
+
+
+```
+
+## Clean the data
+
+Now we have the data that we want to analyze, but, what are the best registers for our propopuse?. Firstly, it is important to clean and get only the information without NAs.
+The first hypothesis is what will happen if we use a median in suscriberCount and videoCount in order to replace the NA values 
+
+```{r pressure, echo=FALSE}
+
+data_NoNa <- data_without_id[is.na(data_without_id$viewCount)==FALSE,]
+summary(data_NoNa)
+
+data_Nona2 <- data_NoNa
+data_Nona2[is.na(data_Nona2$subscriberCount),4] <- 938
+data_Nona2[is.na(data_Nona2$videoCount),5] <- 59
+summary(data_Nona2)
+
+count.fields(data_Nona2[data_Nona2$viewCount!=0,])
+
+```
+
+```{r pressure, echo=FALSE}
+library(Hmisc)
+data_Nona2$videoCount <- as.integer(data_Nona2$videoCount)
+data_Nona2$viewCount <- as.integer(data_Nona2$viewCount)
+rcorr(data_Nona2[,c(5,6)], type="pearson") # type can be pearson or spearman
+
+```
+
