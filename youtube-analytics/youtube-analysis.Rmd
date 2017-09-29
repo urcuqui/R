@@ -32,13 +32,8 @@ data_NoNa <- data_without_id[is.na(data_without_id$viewCount)==FALSE,]
 summary(data_NoNa)
 
 data_Nona2 <- data_NoNa
-data_Nona2[is.na(data_Nona2$subscriberCount),4] <- 270638
-data_Nona2[is.na(data_Nona2$videoCount),5] <- 1009
-data_Nona2[is.na(data_Nona2$commentCount),1] <- 578
-data_Nona2[is.na(data_Nona2$dislikeCount),2] <- 138
-data_Nona2[is.na(data_Nona2$likeCount),3] <- 3623
-
-
+data_Nona2[is.na(data_Nona2$subscriberCount),4] <- 938
+data_Nona2[is.na(data_Nona2$videoCount),5] <- 59
 summary(data_Nona2)
 
 count.fields(data_Nona2[data_Nona2$viewCount!=0,])
@@ -46,13 +41,12 @@ count.fields(data_Nona2[data_Nona2$viewCount!=0,])
 ```
 
 ```{r pressure, echo=FALSE}
-#install.packages("Hmisc")
 library(Hmisc)
 data_Nona2$videoCount <- as.integer(data_Nona2$videoCount)
 data_Nona2$viewCount <- as.integer(data_Nona2$viewCount)
-data_Nona2 <- data_Nona2[is.na(data_Nona2$viewCount)==FALSE,]
-rcorr(data_Nona2$videoCount,data_Nona2$viewCount, type="pearson") # type can be pearson or spearman
-cor(data_Nona2,method="pearson")
+rcorr(data_Nona2[,c(5,6)], type="pearson") # type can be pearson or spearman
 
 ```
+
+
 
