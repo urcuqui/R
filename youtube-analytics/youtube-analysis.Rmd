@@ -47,6 +47,102 @@ data_Nona2$viewCount <- as.integer(data_Nona2$viewCount)
 rcorr(data_Nona2[,c(5,6)], type="pearson") # type can be pearson or spearman
 
 ```
+```{r pressure, echo=FALSE}
+#install.packages("caret")
+#install.packages("DAAG")
+library(DAAG)
+library(caret)
+set.seed(1234)
+partition <- createDataPartition(data_Nona2$viewCount, p=0.8, list=FALSE)
+training <- data_Nona2[ partition, ]
+testing <- data_Nona2[ -partition, ]
+# Multiple Linear Regression
+fit1 <- lm(formula = training$viewCount ~ training$dislikeCount + training$likeCount + 
+       training$subscriberCount+ training$commentCount, data = training)
+layout(matrix(c(1,2,3,4),2,2)) 
+plot(fit1)
+
+
+
+
+```
+```{r pressure}
+
+fit2 <- lm(training$viewCount ~ training$videoCount+ training$subscriberCount,data=training)
+layout(matrix(c(1,2,3,4),2,2)) 
+plot(fit2)
+
+
+anova(fit1, fit2)
+summary(fit2)
+
+```
+
+## Selection of the best characteristics for the last experiment
+
+According to the Residual standard error, a regular model can be created with only two characteristics, but, it is not a good result because its value is 0.1226 
+
+```{r pressure}
+
+data_Nona3 <- data_NoNa
+data_Nona3[is.na(data_Nona3$subscriberCount),4] <- 0
+data_Nona3[is.na(data_Nona3$videoCount),5] <- 0
+data_Nona3[is.na(data_Nona3$commentCount),1] <- 0
+data_Nona3[is.na(data_Nona3$dislikeCount),2] <- 0
+data_Nona3[is.na(data_Nona3$likeCount),3] <- 0
+
+summary(data_Nona3)
+
+data_Nona3$videoCount <- as.integer(data_Nona3$videoCount)
+data_Nona3$viewCount <- as.integer(data_Nona3$viewCount)
+data_Nona3 <- data_Nona3[is.na(data_Nona3$viewCount)==FALSE,]
+cor(data_Nona3,method="pearson")
+
+set.seed(1434)
+partition2 <- createDataPartition(data_Nona3$viewCount, p=0.8, list=FALSE)
+training2 <- data_Nona3[ partition2, ]
+testing2 <- data_Nona3[ -partition2, ]
+
+fit3 <- lm(formula = training2$viewCount ~  
+       training2$subscriberCount+ training2$commentCount + training2$videoCount, data = training2)
+
+summary(fit3)
+
+```
+
+## Are the like and dislike important for our analysis?
+
+In order to find if both like and dislike are important characteristics for our analysis; I will take some samples of them in order to create with other model another dataset that it will analyze with the previous method. 
+
+```{r pressure}
+data_likes <- data_without_id[is.na(data_without_id$likeCount)==FALSE,]
+data_likes <- data_likes[,-c(4,5)]
+data_likes[is.na(data_likes$commentCount),1] <- 444
+data_likes[is.na(data_likes$viewCount),4] <- 162779
+cor(data_likes,method="pearson")
+
+#Multiple R-squared:  0.3826,	Adjusted R-squared:  0.3826 
+likes_fit <- lm(formula = data_likes$likeCount ~  
+       data_likes$viewCount , data = data_likes)
+summary(likes_fit)
+
+#Multiple R-squared:  0.5354,	Adjusted R-squared:  0.5351 
+likes_fit <- lm(formula = data_likes$likeCount ~  
+       data_likes$viewCount +data_likes$commentCount + data_likes$dislikeCount, data = data_likes)
+summary(likes_fit)
+```
+
+```{r pressure}
+
+prediction <- predict(likes_fit, newdata=data_without_id[is.na(data_without_id$likeCount)==FALSE,])
+data_without_id_2 <- data_without_id
+summary(data_without_id_2)
+prediction <- predict(likes_fit, newdata=data_without_id_2[is.na(data_without_id_2$likeCount)==TRUE,-c(4,5)])
+summary(data_without_id_2)
+
+
+```
+
 
 
 
