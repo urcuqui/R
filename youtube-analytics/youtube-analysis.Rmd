@@ -117,16 +117,25 @@ In order to find if both like and dislike are important characteristics for our 
 ```{r pressure}
 data_likes <- data_without_id[is.na(data_without_id$likeCount)==FALSE,]
 data_likes <- data_likes[,-c(4,5)]
-data_likes[is.na(data_likes$commentCount),1] <- 444
-data_likes[is.na(data_likes$viewCount),4] <- 162779
+
+ #commentCount       dislikeCount       likeCount         viewCount        
+ #Min.   :     0.0   Min.   :    0.0   Min.   :      0   Min.   :        0  
+ #1st Qu.:     3.0   1st Qu.:    0.0   1st Qu.:     15   1st Qu.:      496  
+ #Median :    22.0   Median :    4.0   Median :     99   Median :     3488  
+ #Mean   :   444.1   Mean   :  138.8   Mean   :   3621   Mean   :   162779  
+ #3rd Qu.:   125.0   3rd Qu.:   26.0   3rd Qu.:    714   3rd Qu.:    24594  
+ #Max.   :435203.0   Max.   :68702.0   Max.   :1444256   Max.   :123036315  
+
+data_likes[is.na(data_likes$commentCount),1] <- 22
+data_likes[is.na(data_likes$viewCount),4] <- 3488
 cor(data_likes,method="pearson")
 
-#Multiple R-squared:  0.3826,	Adjusted R-squared:  0.3826 
+#Multiple R-squared:  0.3827,	Adjusted R-squared:  0.3826 
 likes_fit <- lm(formula = data_likes$likeCount ~  
        data_likes$viewCount , data = data_likes)
 summary(likes_fit)
 
-#Multiple R-squared:  0.5354,	Adjusted R-squared:  0.5351 
+#Multiple R-squared:  0.5354,	Adjusted R-squared:  0.5352 
 likes_fit <- lm(formula = data_likes$likeCount ~  
        data_likes$viewCount +data_likes$commentCount + data_likes$dislikeCount, data = data_likes)
 summary(likes_fit)
@@ -134,8 +143,26 @@ summary(likes_fit)
 
 ```{r pressure}
 
-prediction <- predict(likes_fit, newdata=data_without_id[is.na(data_without_id$likeCount)==FALSE,])
-data_without_id_2 <- data_without_id
+
+data_without_id_2 <- data_without_id[is.na(data_without_id$likeCount)==TRUE,]
+data_without_id_2[is.na(data_without_id_2$commentCount),1] <- 22
+data_without_id_2[is.na(data_without_id_2$dislikeCount),2] <- 99
+#data_without_id_2[is.na(data_without_id_2$subscriberCount),4] <- 99
+data_without_id_2[is.na(data_without_id_2$viewCount),6] <- 3488
+data_without_id_2 <- data_without_id_2[,-c(3,4,5)]
+#commentCount       dislikeCount       likeCount         viewCount        
+ #Min.   :     0.0   Min.   :    0.0   Min.   :      0   Min.   :        0  
+ #1st Qu.:     3.0   1st Qu.:    0.0   1st Qu.:     15   1st Qu.:      496  
+ #Median :    22.0   Median :    4.0   Median :     99   Median :     3488  
+ #Mean   :   444.1   Mean   :  138.8   Mean   :   3621   Mean   :   162779  
+ #3rd Qu.:   125.0   3rd Qu.:   26.0   3rd Qu.:    714   3rd Qu.:    24594  
+ #Max.   :435203.0   Max.   :68702.0   Max.   :1444256   Max.   :123036315  
+
+
+prediction <- predict(likes_fit, data_without_id_2[,c(3,1,2)], interval = "confidence", level = 0.95)
+
+
+
 summary(data_without_id_2)
 prediction <- predict(likes_fit, newdata=data_without_id_2[is.na(data_without_id_2$likeCount)==TRUE,-c(4,5)])
 summary(data_without_id_2)
@@ -143,6 +170,33 @@ summary(data_without_id_2)
 
 ```
 
+```{r pressure}
+
+data_dislike <- data_without_id[is.na(data_without_id$dislikeCount)==FALSE,]
+data_dislike <- data_dislike[,-c(4,5)]
+
+data_dislike[is.na(data_dislike$commentCount),1] <- 444
+data_dislike[is.na(data_dislike$viewCount),4] <- 162779
+cor(data_likes,method="pearson")
 
 
+#Multiple R-squared:  0.3826,	Adjusted R-squared:  0.3826 
+dislike_fit <- lm(formula = data_dislike$likeCount ~  
+       data_dislike$viewCount , data = data_dislike)
+summary(dislike_fit)
+
+#Multiple R-squared:  0.5354,	Adjusted R-squared:  0.5351 
+dislike_fit <- lm(formula = data_dislike$likeCount ~  
+       data_dislike$viewCount +data_dislike$commentCount + data_dislike$dislikeCount, data = data_dislike)
+summary(dislike_fit)
+
+prediction <- predict(dislike_fit, newdata=data_without_id[is.na(data_without_id$dislikeCount)==TRUE,-c(4,5)])
+summary(data_without_id_2)
+
+
+
+
+
+
+```
 
