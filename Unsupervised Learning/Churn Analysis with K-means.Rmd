@@ -1,0 +1,142 @@
+---
+title: "Churn & K-Means"
+author: "Christian Urcuqui"
+date: "16 de febrero de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Churn Analyze by K-Means 
+
+Dataset is from: "Data Science for Business"
+
+This code analyses the churn of some client histories to train K-Means models
+to predict the most tentative users to leave.
+
+### Exploratory Analysis
+
+The first idea is to explore about the data in our churn dataset through the application of some descriptive statistic tools.
+
+```{r exploratory}
+library(ggplot2)
+library(caret)
+library(corrplot)
+
+churn <- read.csv2(file.choose())
+summary(churn)
+print("")
+print("-------------")
+str(churn)
+print("")
+print("-------------")
+table(churn$LEAVE)
+print("")
+print("-------------")
+prop.table(table(churn$LEAVE))
+print("")
+print("-------------")
+
+
+```
+
+## Including Plots
+
+It is important to use visual tools because they are powerful tool to get insights from the information.
+
+
+
+```{r pressure, echo=FALSE}
+ggplot(churn, aes(x=HOUSE, y=OVERAGE, color=LEAVE)) + geom_point(size=2, alpha=.5)
+ggplot(churn, aes(x=HOUSE, y=INCOME, color=LEAVE)) + geom_point(size=2, alpha=.5)
+ggplot(churn, aes(x=INCOME, y=OVERAGE, color=LEAVE)) + geom_point(size=2, alpha=.5)
+ggplot(churn, aes(x=LEFTOVER, y=OVERAGE, color=LEAVE)) + geom_point(size=2, alpha=.5)
+
+ggplot(churn, aes(x=HOUSE)) + geom_density(aes(group=LEAVE, colour=LEAVE, 
+                                                 fill=LEAVE, alpha=0.1))
+```
+## Data Processing 
+
+With the previous visual analysis we can infer that our dataset can be segmented by some variables, specifically, through the target variable "Leave". So, the next code will analyze only the clients who already leave.
+
+```{r processing, echo=FALSE}
+
+churnLeaving <- churn[churn$LEAVE == "LEAVE",]
+table(churnLeaving$LEAVE)
+
+ggplot(churnLeaving, aes(x=HOUSE, y=OVERAGE)) + geom_point(size=2, alpha=.5)
+ggplot(churnLeaving, aes(x=HOUSE, y=INCOME)) + geom_point(size=2, alpha=.5)
+ggplot(churnLeaving, aes(x=INCOME, y=OVERAGE)) + geom_point(size=2, alpha=.5)
+ggplot(churnLeaving, aes(x=LEFTOVER, y=OVERAGE)) + geom_point(size=2, alpha=.5)
+
+ggplot(churnLeaving, aes(x=HOUSE)) + geom_density(aes(colour=LEAVE, fill=LEAVE, alpha=0.1))
+ggplot(churnLeaving, aes(x=OVERAGE)) + geom_density(aes(colour=LEAVE, fill=LEAVE, alpha=0.1))
+ggplot(churnLeaving, aes(x=INCOME)) + geom_density(aes(colour=LEAVE, fill=LEAVE, alpha=0.1))
+ggplot(churnLeaving, aes(x=LEFTOVER)) + geom_density(aes(colour=LEAVE, fill=LEAVE, alpha=0.1))
+
+summary(churnLeaving)
+
+
+
+
+```
+
+## Data Cleansing 
+
+So, if we want to use or segment our data by the application of K-Means, it is important that we can only use nominal data, in order to these ideas, we need to select only our variables of interest and for the moment discard our categorical Leave variable
+
+```{r cleansing, echo=FALSE}
+
+# Create a new variable to does not change our previous work
+
+churnLeavingStd <- churnLeaving
+# erase the categorical variables by NULL asignation 
+churnLeavingStd$LEAVE <- NULL
+churnLeavingStd$COLLEGE <- NULL
+churnLeavingStd$REPORTED_SATISFACTION <- NULL
+churnLeavingStd$REPORTED_USAGE_LEVEL <- NULL
+churnLeavingStd$CONSIDERING_CHANGE_OF_PLAN <- NULL
+churnLeavingStd <- as.data.frame(scale(churnLeavingStd))
+summary(churnLeavingStd)
+
+
+```
+
+## Data Segmentation elbow method
+
+How many k folds are neccesary to segment our dataset?, an approximate measure can be calculated by the elbow method. 
+
+```{r elbow, echo=FALSE}
+
+vars <- apply(churnLeavingStd,2,var)
+sumvars <- sum(vars)
+#no queremos la varianza sino la suma de las diferencias cuadradas, multiplicamos por (n-1)
+wss <- (nrow(churnLeavingStd) - 1)*sumvars
+
+set.seed(1234)
+maxK <- 15
+for (k in 2:maxK) { 
+  #k=2
+  wssK <- 0 #Aqui va a quedar el total de WSS para el k actual
+  kmClustering <- kmeans(churnLeavingStd, k, nstart=20, iter.max=150)
+  churnLeavingStd$clusters <- kmClustering$cluster
+  
+  for(i in 1:k) { #recorrido de los clusters
+    #i=1
+    clusterData <- subset(churnLeavingStd, clusters==i)
+    centroide <- apply(clusterData, 2, FUN=mean)
+    wssK <- wssK + sum(apply(clusterData, 1, FUN=function(fila) {sum((fila-centroide)^2)}))
+  }
+  #Ya acabamos este ciclo, guardamos el wss del K en el vector de WSS
+  wss[k] <- wssK
+}
+
+plot(1:maxK, wss, type = "b", xlab = "Número de Clusters", ylab = "Within groups sum of squares") 
+
+```
+
+### Data Segmentation without elbow analysis
+
+With the previous analysis we can infer that our k fold is 5. But what happen if did we use another variable, for example, k fold... so, the next code will analyze this case. 
