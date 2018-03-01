@@ -40,7 +40,7 @@ First, we will use a scatter plot to analyze what is the data dispertion of some
 
 ```
 
-```{r explore_graphics, echo=FALSE}
+```{r other_Data, echo=FALSE}
 # So, lets explore another dataset of cars
 str(mtcars)
 
@@ -50,3 +50,38 @@ ggplot (data = mpg) + geom_point(mapping =aes(x=class, y=drv))
 
 ```
 ## Aesthehic Mappings
+
+So, we can add other propierties in our graphics through the application of aesthethic (aes), this property allows us to add color, size and others to our points. The next code will add color by the categories in the feature class.
+
+```{r explore_graphics, echo=FALSE}
+
+ggplot(data=mpg) + 
+  geom_point(mapping=aes(x=displ, y=hwy, color=class))
+
+ggplot(data=mpg) + 
+  geom_point(mapping = aes(x=displ, y=hwy, size=class))
+
+ggplot(data=mpg) + 
+  geom_point(mapping = aes(x=displ, y=hwy, alpha=class))
+
+ggplot(data=mpg) + 
+  geom_point(mapping = aes(x=displ, y=hwy, shape=class))
+
+ggplot(data=mpg) + 
+  geom_point(mapping=aes(x=displ, y=hwy), color="blue")
+
+```
+## Facets
+
+This is another tool to split your visualization window in different parts, such as, the view can be divided by a categorical variable.
+
+```{r facets, echo=FALSE}
+
+ggplot(data=mpg) +
+  geom_point(mapping=aes(x=displ, y=hwy)) +
+  facet_wrap(~ class, nrow=2)
+
+
+```
+
+## other
