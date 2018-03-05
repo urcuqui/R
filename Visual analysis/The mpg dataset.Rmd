@@ -2,6 +2,8 @@
 title: "The mpg dataset"
 author: "Christian Urcuqui"
 date: "27 de febrero de 2018"
+github: "urcuqui"
+webpage: "urcuqui.github.com"
 output: html_document
 ---
 
@@ -93,7 +95,7 @@ ggplot(data=mpg) +
 
 Facet exercises, we will explore what happen if we use some special features and combinations. 
 
-```{r facetsother}
+```{r facetsother, echo=FALSE}
 #1
 ggplot(data=mpg) +
   geom_point(mapping=aes(x=displ, y=hwy)) +
@@ -109,8 +111,58 @@ ggplot(data=mpg) +
     
 #3
 ggplot(data=mpg) +
-  geom
+  geom_point(mapping = aes(x =  displ, y=hwy)) +
+  facet_grid(drv ~.)
+
+ggplot(data=mpg) +
+  geom_point(mapping=aes(x=displ, y=hwy)) +
+  facet_grid(. ~ cyl) 
+
+#4
+ggplot(data =mpg) +
+  geom_point(mapping=aes(x = displ, y=hwy)) +
+  facet_wrap(~class, nrow=2)
+
+#5
+ggplot(data =mpg) +
+  geom_point(mapping=aes(x = displ, y=hwy)) +
+  facet_wrap(~class, ncol =2)
+
 
 ```
+
+## Geometric Objetcs
+
+Geom is an geometric object whose is used by a plot to represent the data.
+
+```{r geometric, echo=FALSE}
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x =displ, y=hwy))
+
+ggplot(data=mpg) +
+  geom_smooth(mapping = aes(x =displ, y=hwy, linetype=drv))
+
+ggplot(data=mpg) +
+  geom_smooth(mapping = aes(x =displ, y=hwy, linetype=drv, colour=drv))+
+  geom_point(mapping = aes(x =displ, y=hwy, colour=drv))
+
+ggplot(data = mpg) +
+  geom_smooth(mapping=aes(x=displ, y=hwy))
+
+ggplot(data = mpg) +
+  geom_smooth(mapping=aes(x=displ, y=hwy, group=drv))
+
+ggplot(data = mpg) +
+  geom_smooth(mapping=aes(x=displ, y=hwy, group=drv, color=drv),
+              show.legend = FALSE)
+
+ggplot(data=mpg, mapping=aes(x =displ, y=hwy)) +
+  geom_point(mapping = aes(colour=class)) +
+  geom_smooth()
+
+```
+
+## Bar Graph
+
 
 
