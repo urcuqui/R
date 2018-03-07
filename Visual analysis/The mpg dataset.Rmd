@@ -160,9 +160,139 @@ ggplot(data=mpg, mapping=aes(x =displ, y=hwy)) +
   geom_point(mapping = aes(colour=class)) +
   geom_smooth()
 
+ggplot(data=mpg, mapping=aes(x=displ, y=hwy))+
+  geom_point(mapping=aes(color=class))+
+  geom_smooth(
+    data=filter(mpg,class=="subcompact"),
+    se=FALSE
+  )
+
+
 ```
+
+Exercices section 2
+```{r excer2, echo=FALSE}
+
+#1
+#histogram
+
+#2
+#the next graphic integrates an scatter plot and geom_smooth without its confidence interval
+ggplot(data=mpg, mapping = aes(displ, y=hwy, color=drv)) +
+  geom_point()+
+  geom_smooth(se=FALSE)
+
+#3
+#show.legend displays the information related to the graphic categories mapped in the plot
+
+#4
+#se argument in geom_smooth displays the confidence interval 
+
+#5
+#ggplot(data=mpg, mapping = aes(x =displ, ))
+
+  
+
+
+
+
+```
+
 
 ## Bar Graph
 
+So, this section shows the use of bar charts in visual analysis. In this case, we will explore the diamonds dataset saved in ggplot2. Through this section you will see how edit the stat argument in order to show other views. 
+
+```{r barGraph, echo=FALSE}
+#which variables can we use?
+str(diamonds)
+
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x=cut))
+
+#stat count is the default setting in geom_bar, so if we change it to the another one we will get the same result
+ggplot(data = diamonds) +
+  stat_count(mapping = aes(x=cut))
+
+## So let's modify stat property.
+
+demo <- tribble(
+  ~a,     ~b,
+  "bar_1", 20,
+  "bar_2", 30,
+  "bar_3", 40
+)
+
+# you can change the stat using the parameter stat and gives it identity 
+ggplot(data=demo) +
+geom_bar(
+  mapping=aes(x=a, y=b), stat="identity"
+)
+
+# 
+# ggplot(data=diamonds) +
+#   geom_bar(
+#     mapping= aes(x=cut, y= ..prob.., group=1)
+#   )
+
+# stat_summary is more flexible than stat_bin 
+ggplot(data=diamonds) +
+  stat_summary(
+    mapping = aes(x=cut, y=depth),
+    fun.ymin = min,
+    fun.ymax = max,
+    fun.y = median
+  )
+  
 
 
+```
+
+Exercies 3
+
+```{r exer3, echo=FALSE}
+
+#1. what is the default geom associated to stat_summmary? 
+# the associated default geoms are geom_histogram/geom_freqpoly and stat_bin
+
+ggplot(data=diamonds) +
+  geom_histogram(mapping = aes(x=carat))
+
+#2. what is the difference between geom_bar and geom_col
+ggplot(data=diamonds) +
+  geom_bar(mapping = aes(x=cut))
+
+ggplot(data=diamonds) +
+  geom_col(mapping = aes(cut,table))
+
+# geom_col allows us to define the heights of the bars 
+
+```
+Let's see more bar charts with colors!
+
+```{r bar2, echo=FALSE}
+
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=cut, colour=cut))
+
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=cut, fill=cut))
+
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=cut, fill=clarity))
+
+#what happen if we use position identity in the previous plot
+ggplot(data=diamonds) + 
+  geom_bar(mapping=aes(x=cut, fill=clarity), position="identity")
+# the previous plot is not fine because some charts are overlapped, so, we need to change some aesthetic parameters
+ggplot(data=diamonds,
+       mapping=aes(x=cut, fill=clarity)) + 
+  geom_bar(alpha=1/5, position="identity") 
+
+ggplot(data=diamonds,
+       mapping=aes(x=cut, color=clarity)) + 
+  geom_bar(fill=NA, position="identity")
+
+
+
+```
