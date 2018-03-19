@@ -1,7 +1,8 @@
 ---
-title: "The mpg dataset"
+title: "Visual Analytics"
 author: "Christian Urcuqui"
-date: "27 de febrero de 2018"
+date: "27 February 2018"
+version: 
 github: "urcuqui"
 webpage: "urcuqui.github.com"
 output: html_document
@@ -16,8 +17,19 @@ knitr::opts_chunk$set(echo = TRUE)
 We will use the packets provided in the tidyverse project in order to analyze the mpg dataset, this source has information of 30 car models and their features, such as, engine, year and hwy.
 
 
-```{r cars}
+```{r libraries}
+#install.packages("tidyverse")
+#install.packages("openair")
+#install.packages("quantmod")
+#install.packages("readxl")
+#install.packages("lubridate")
+
 library(tidyverse)
+library(openair) #Libreria para calendar plots  
+library(quantmod) # This library allows for an easy way to get daily stock data
+library(readxl)
+library(lubridate)
+
 summary(mpg)
 str(mpg)
 
@@ -295,4 +307,113 @@ ggplot(data=diamonds,
 
 
 
+```
+
+# Geom Line
+
+In this section we will explore a daily flights dataset to know what is the different tendencies in the flights. 
+
+```{r line, echo=FALSE}
+
+#library(lubridate)
+#install.packages("nycflights13")
+#library(nycflights13)
+
+# Load the day.csv from the downloaded Bike sharing system project
+daily_data = read.csv(file.choose(), header=TRUE, stringsAsFactors = FALSE)
+
+str(daily_data)
+
+daily_data$Date = as.Date(daily_data$dteday)
+
+ggplot(daily_data, aes(Date, cnt)) +
+  geom_line() +
+  scale_x_date("month") +
+  ylab("total de bicletas alquiladas") +
+  xlab("mes")
+
+#Treemap
+#calendarios
+
+```
+
+
+
+
+# Treemap
+
+In the next section we will explore the application of treemap, it is useful when we want to get visual representations related in our data by the representation association of dimension and color of each rectangle in our graphic. Each rectangle represents a node in the tree.
+
+``` {r treemap, hecho=FALSE}
+#install.packages("treemap")
+library(treemap)
+
+summary(mpg)
+mpg2008 <- subset(mpg, mpg$year == 2008)
+
+head(mpg2008, 3)
+
+treemap <- treemap(mpg2008, c("class","manufacturer"), vSize="hwy", vColor="cty", 
+           fontsize.labels = 20, fontsize.title = 42)
+
+?RColorBrewer
+
+treemapHwy <- treemap(mpg2008, c("class", "manufacturer", "model"), vSize= "hwy", vColor="displ", palette ="Oranges", fontsize.labels = 15, fontsize.title = 25)
+```
+
+## Calendar plots
+
+It is another graphical input that it used hot plots to represent a resume in calendars. 
+
+``` {r calendar, hecho=FALSE}
+
+#Primer ejemplo
+# getSymbols("YHOO",src="google") 
+# data <- as.data.frame(YHOO)
+# data$returns <- with(data, (YHOO.Close/YHOO.Open-1)*100)
+# data$date <- as.Date(rownames(data))
+# 
+# calendarPlot(data, pollutant="returns", year=2017,
+#              cols=c("darkred", "red", "gray", "green", "darkgreen"),
+#              main="Retornos yahoo % (2018)")
+# 
+# calendarPlot(data, pollutant="returns", year=2018,
+#              cols=c("darkred", "red", "gray", "green", "darkgreen"),
+#              main="Retornos yahoo % (2018)")
+# 
+# calendarPlot(data, pollutant="returns", year=2018,
+#              cols="heat",
+#              main="Retornos yahoo % (2018)")
+
+#segundo ejemplo
+#datos<-read_xlsx("Online Retail.xlsx")
+datos<-read_xlsx(file.choose())
+
+datos<-as.data.frame(datos)
+head(datos)
+table(datos$Country)
+datos<-subset(datos, Country=="Germany")
+
+extractdate <- function(date) {
+  day <- format(date, format="%d")
+  month <- format(date, format="%m")
+  year <- format(date, format="%Y")
+  
+  cbind(day, month, year)
+}
+
+datos<-cbind(datos,extractdate(datos$InvoiceDate))
+datos[,c(9:11)]<-sapply(datos[,c(9:11)],as.character)
+
+datosagg<-aggregate(Quantity ~ year+month+day, data= datos,sum, na.action=NULL)
+datosagg$fecha<-paste0(datosagg$year,datosagg$month,datosagg$day)
+datosagg$date<-as.Date(datosagg$fecha,format="%Y%m%d")
+
+calendarPlot(datosagg, pollutant="Quantity", year=2010,
+             cols="heat",
+             main="EnvÃ?os a Alemania (2010)")
+
+calendarPlot(datosagg, pollutant="Quantity", year=2011,
+             cols="heat",
+             main="EnvÃ?os a Alemania (2011)")
 ```
