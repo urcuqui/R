@@ -2,7 +2,7 @@
 title: "Visual Analytics"
 author: "Christian Urcuqui"
 date: "27 February 2018"
-version: 
+version: 1
 github: "urcuqui"
 webpage: "urcuqui.github.com"
 output: html_document
@@ -11,6 +11,16 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+**Table of Contents**
+
+* [Introduction](#introduction)
+* [Libraries](#libraries)
+    * ggplot
+* [Traning](#training)
+* [Bibliography](#bibliography)
+
+
 
 ## Exploratory dataset cars
 
@@ -417,3 +427,10 @@ calendarPlot(datosagg, pollutant="Quantity", year=2011,
              cols="heat",
              main="Env√?os a Alemania (2011)")
 ```
+
+# Bibliography
+
++ R for Data Science, Wickham, H., (2017). Grolemund G. O'RELLY.
+
+
+
