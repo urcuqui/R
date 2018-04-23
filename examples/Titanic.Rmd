@@ -1,0 +1,168 @@
+---
+title: "Titanic"
+author: "Christian Urcuqui"
+date: "23 de abril de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# spanish
+
+
+** Table of Contents**
+
+
+* [Introduccion](#introduccion)
+* [Pregunta o objetivo](#pregunta-o-objetivo)
+* [Exploracion](#exploration)
+    * Cargar los datos
+    * Cargar las librerias
+    * Diccionario de datos
+    * Transformacion de los datos
+* [Entrenamiento](#entrenamiento)
+* [Evaluacion](#evaluacion)
+
+## Exploracion
+
+### Cargar los datos
+
+Vamos a cargar en memoria los archivos train.csv y test.csv, es decir, creamos y asignamdos dos dataframe
+
+```{r data, echo=FALSE}
+
+train <- read.csv(choose.files())
+test <- read.csv(choose.files())
+
+```
+
+
+### librerias
+
+```{r libraries}
+library(ggplot2) # Data visualization
+library(readr) # CSV file I/O, e.g. the read_csv function
+```
+
+### Diccionario de datos
+
+Tomado y traducido de:
+https://www.kaggle.com/c/titanic/data
+
+		
+| Variable  |Definition                                   |  Key                                          |
+|-----------|---------------------------------------------|-----------------------------------------------|
+| survival  | Survival                                    |  0 = No, 1 = Yes                              |
+|  pclass   | Ticket class                                | 1 = 1st, 2 = 2nd, 3 = 3rd                     |
+|  sex      | Age in years                                |                                               |
+|  sibsp    |  # of siblings / spouses aboard the Titanic |                                               |
+|  parch    |  # of parents / children aboard the Titanic |                                               |   
+|  ticket   |  Ticket number                              |                                               | 
+|  fare     |  Passenger fare                             |                                               |
+|  cabin    |  Cabin number                               |                                               |
+|  embarked |  Port of Embarkation                        |C = Cherbourg, Q = Queenstown, S = Southampton |
+
+
+Variable Notes
+
+pclass: A proxy for socio-economic status (SES)
+1st = Upper
+2nd = Middle
+3rd = Lower
+
+age: Age is fractional if less than 1. If the age is estimated, is it in the form of xx.5
+
+sibsp: The dataset defines family relations in this way...
+Sibling = brother, sister, stepbrother, stepsister
+Spouse = husband, wife (mistresses and fiancés were ignored)
+
+parch: The dataset defines family relations in this way...
+Parent = mother, father
+Child = daughter, son, stepdaughter, stepson
+Some children travelled only with a nanny, therefore parch=0 for them.
+
+
+### Transformacion de los datos
+
+Ahora es importante verificar que los tipos de datos que sean compatibles con R y al contexto que estamos trabajando.
+
+```{r tranform, echo=TRUE}
+
+#training dataset
+
+train$Survived <- as.factor(train$Survived)
+train$Pclass <-as.factor(train$Pclass)
+levels(train$Pclass) <-c(3,2,1)
+train$Name <-as.character(train$Name)
+train$Age <-as.integer(train$Age)
+train$Ticket <- as.character(train$Ticket)
+
+train$Cabin[train$Cabin ==""] <- NA
+
+# testing dataset
+
+test$Pclass <-as.factor(test$Pclass)
+levels(test$Pclass) <-c(3,2,1)
+test$Name <-as.character(test$Name)
+test$Age <-as.integer(test$Age)
+test$Ticket <- as.character(test$Ticket)
+addNA()
+
+# veamos si existen datos vacios
+
+table(is.na(train))
+# FALSE  TRUE 
+# 10515   177 
+
+# segun ello existen 177 datos vacios
+summary(train)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+# -----------------------------------------------------------------------------
+
+# english
+
+** Table of Contents**
+
+
+* [Introduction](#introduction)
+* [Question or Objective](#question-or-objective)
+* [Exploration](#exploration)
+    * Load data
+    * Load libraries
+    * Data transformation
+* [Traning](#training)
+* [Evaluation](#evaluation)
+
+
+# Exploration
+
+## libraries
+
+
+
+```{r libraries}
+library(ggplot2) # Data visualization
+library(readr) # CSV file I/O, e.g. the read_csv function
+```
+
+
+# Input data files are available in the "../input/" directory.
+# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory
+
+system("ls ../input/train.csv")
+
+# Any results you write to the current directory are saved as output.Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
