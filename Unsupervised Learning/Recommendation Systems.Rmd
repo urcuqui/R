@@ -1,0 +1,111 @@
+---
+title: "Recommendation Systems"
+author: "Christian Urcuqui"
+date: "2 de mayo de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## PCA Analysis
+
+prcomp {stats} is the function to apply Principal Components Analysis 
+
+```{r USAArests}
+
+data("USArrests")
+
+names(USArrests)
+
+# lets see gow each variable is varying
+
+apply(USArrests, 2, var)
+
+# Murder    Assault   UrbanPop       Rape 
+#  18.97047 6945.16571  209.51878   87.72916 
+
+# so we see that the Assault is the most variable with variance
+
+# it is important to apply a scalign process 
+
+pca <- prcomp(USArrests, scale=TRUE)
+
+names(pca)
+
+# "sdev"     "rotation" "center"   "scale"    "x"       
+
+# biplot is useful to know how the proportions of each variable along the two principal components
+
+pca$rotation <- -pca$rotation
+pca$x = -pca$x
+biplot(pca,scale=0)
+
+# from the biplot we can see that in PC1 and PC2, the variables Rape, Assault and Murder are more correlated than the UrbanPop feature. 
+
+
+```
+
+## Cluster Analysis 
+
+Unsupervised techniques, we will apply KMeans 
+
+```{r USAArests}
+
+# K-means clustering
+
+library(cluster)
+data(iris)
+iris$Species <-as.numeric(iris$Species)
+kmeans <- kmeans(x=iris, centers = 5)
+clusplot(iris,kmeans$cluster, color = TRUE, shade=TRUE, labels=13, lines=0)
+
+
+# the k was selected by the elbow method
+
+library(ggplot2)
+cost_df <- data.frame()
+for(i in 1:100)
+{
+  kmeans <- kmeans(x=iris, centers=i, iter.max=50)
+  cost_df <- rbind(cost_df, cbind(i, kmeans$tot.withinss))
+}
+names(cost_df) <-c("cluster","cost")
+#Elbow method to identify the idle number of clusters 
+# Cost plot
+
+ggplot (data =cost_df, aes(x=cluster, y=cost, group=1)) + 
+  theme_bw(base_family = "Garamond") + 
+  geom_line(colour= "darkgreen") +
+  theme(text= element_text(size=20)) +
+  ggtitle("Reduction in Cost For Values of 'k'\n") +
+  xlab("\nClusters")
+
+
+```
+## Recommender Systems
+
+So, it is important to know about the data we will use, because depends on it we can use four approaches, these are:
+
++ Collaborative filtering: information about similar items and users:
+  + Item- based collaborative filtering: The recommendations are based on the most similar items that the user's purchases 
+  + User-based collaborative filtering: This approach refers that the item recommendations are based on the most preferred by similar users. 
+  
++ Content-based filtering: This is for each user; it defines a user profile through her/his history purchases and this technique
+
++ Hybrid filtering: This defines the recommendations using the above approaches 
+
++ Knowledge-based filtering: This uses explicit knowledge about the users and items 
+
+
+
+
+
+
+## Bibliography
+
++ Building a Recommendation System with R. (2015). Gorakala, Suresh K., Usuelli, Michele
+
